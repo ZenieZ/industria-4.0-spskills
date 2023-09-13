@@ -1,0 +1,824 @@
+[
+    {
+        "id": "1a4041165b130ba2",
+        "type": "tab",
+        "label": "Simulador MES",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "b105b5e54f5c80d8",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "PEDIDO_CLIENT1",
+        "diff": true,
+        "name": "PEDIDO_CLIENTE_1",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "da64b83a0fd4d797",
+                "c375424b4251e1f0"
+            ]
+        ]
+    },
+    {
+        "id": "8a23bc171de73588",
+        "type": "mysql",
+        "z": "1a4041165b130ba2",
+        "mydb": "a239859642cc19b7",
+        "name": "",
+        "x": 850,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "813280681c7e940a",
+        "type": "function",
+        "z": "1a4041165b130ba2",
+        "name": "Insere pedido na tabela",
+        "func": "ClientID = msg.payload.ClientID\nMaterial = msg.payload.Material\nCor = msg.payload.Cor\nTamanho = msg.payload.Tamanho\n\nmsg.payload={}\n\nmsg.payload.ClientID=ClientID\nmsg.payload.Material=Material\nmsg.payload.Cor=Cor\nmsg.payload.Tamanho=Tamanho\n\nmsg.topic = \"INSERT INTO `PEDIDOS`(`ID`, `ClientID`, `Material`, `Cor`, `Tamanho`) VALUES (NULL, :ClientID, :Material, :Cor, :Tamanho)\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 140,
+        "wires": [
+            [
+                "8a23bc171de73588"
+            ]
+        ]
+    },
+    {
+        "id": "830e226ca2049831",
+        "type": "comment",
+        "z": "1a4041165b130ba2",
+        "name": "Ex.: 'ID1,METAL,BLU,ALTA'",
+        "info": "Ex.: METAL, BLU, ALTA",
+        "x": 160,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "fd419995108666b3",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "PC_PROCESSO",
+        "diff": true,
+        "name": "PÇ_PROCESSO",
+        "x": 120,
+        "y": 440,
+        "wires": [
+            [
+                "9c5844915532e821"
+            ]
+        ]
+    },
+    {
+        "id": "1fcc6339474d275c",
+        "type": "comment",
+        "z": "1a4041165b130ba2",
+        "name": "Ex.: 'METAL,BLU,ALTA'",
+        "info": "",
+        "x": 140,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "cc4e82b8fad740b8",
+        "type": "function",
+        "z": "1a4041165b130ba2",
+        "name": "Pesquisa pedido igual na tabela",
+        "func": "material = msg.payload.material\ncor = msg.payload.cor\ntamanho = msg.payload.tamanho\n\nmsg.topic = \"SELECT ID, ClientID FROM pedidos WHERE Material='\" +material+ \"' AND Cor='\" +cor+ \"' AND Tamanho='\" +tamanho+ \"' ORDER BY ID ASC LIMIT 1;\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 440,
+        "wires": [
+            [
+                "3e239b8e24b47500"
+            ]
+        ]
+    },
+    {
+        "id": "3e239b8e24b47500",
+        "type": "mysql",
+        "z": "1a4041165b130ba2",
+        "mydb": "a239859642cc19b7",
+        "name": "",
+        "x": 770,
+        "y": 440,
+        "wires": [
+            [
+                "220afc6773cc87c1",
+                "0cbab1c52c07ce59",
+                "acee672a89c27cd3"
+            ]
+        ]
+    },
+    {
+        "id": "da64b83a0fd4d797",
+        "type": "csv",
+        "z": "1a4041165b130ba2",
+        "name": "Separador",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "ClientID,Material,Cor,Tamanho",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [
+                "813280681c7e940a"
+            ]
+        ]
+    },
+    {
+        "id": "9c5844915532e821",
+        "type": "csv",
+        "z": "1a4041165b130ba2",
+        "name": "Separador",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "material,cor,tamanho",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 310,
+        "y": 440,
+        "wires": [
+            [
+                "cc4e82b8fad740b8",
+                "e900a10e6b092f1b",
+                "6154894b2fa7e506"
+            ]
+        ]
+    },
+    {
+        "id": "220afc6773cc87c1",
+        "type": "switch",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 910,
+        "y": 440,
+        "wires": [
+            [
+                "a62a5ccb5ae765a9"
+            ],
+            [
+                "682358fce36bfc14"
+            ]
+        ]
+    },
+    {
+        "id": "6af45ea1b9f8d21a",
+        "type": "comment",
+        "z": "1a4041165b130ba2",
+        "name": "Insere pedido dos Clientes no banco de Dados",
+        "info": "",
+        "x": 260,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "7bf425ec3e145af2",
+        "type": "comment",
+        "z": "1a4041165b130ba2",
+        "name": "Compara Peça em processo com Pedidos",
+        "info": "",
+        "x": 240,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "94b25748d98c1c77",
+        "type": "comment",
+        "z": "1a4041165b130ba2",
+        "name": "Devolve se há pedido com o ClientID ou se não há",
+        "info": "",
+        "x": 870,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "e900a10e6b092f1b",
+        "type": "change",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pcprocesso",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0cbab1c52c07ce59",
+        "type": "change",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload[0].ID",
+                "pt": "msg",
+                "to": "result_pedido",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f68034898f4a0efd",
+        "type": "function",
+        "z": "1a4041165b130ba2",
+        "name": "Deleta pedido feito",
+        "func": "//material = flow.get('pcprocesso.material')\n//cor = flow.get('pcprocesso.cor')\n//tamanho = flow.get('pcprocesso.tamanho')\n\nresult_pedido = flow.get('result_pedido')\n\nif (msg.payload == true)\n{\n    //msg.topic=\"DELETE FROM pedidos WHERE ID IN (SELECT ID FROM (SELECT ID FROM pedidos\tWHERE Material='\" +material+ \"' AND Cor='\" +cor+ \"' AND Tamanho='\" +tamanho+ \"' ORDER BY ID ASC) a) LIMIT 1;\"\n    msg.topic=\"DELETE FROM pedidos WHERE ID=\" +result_pedido+ \";\"\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 580,
+        "wires": [
+            [
+                "b3e8e709a09e71ed"
+            ]
+        ]
+    },
+    {
+        "id": "682358fce36bfc14",
+        "type": "switch",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "property": "payload[0].ClientID",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ID1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ID2",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1030,
+        "y": 480,
+        "wires": [
+            [
+                "62d3c349e27bffaa"
+            ],
+            [
+                "8ff18bac13642cbe"
+            ]
+        ]
+    },
+    {
+        "id": "87f17ef7a476d95c",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "RAMPA 1",
+        "diff": true,
+        "name": "Peça Rampa",
+        "x": 1130,
+        "y": 640,
+        "wires": [
+            [
+                "b34ea38a7267958e"
+            ]
+        ]
+    },
+    {
+        "id": "e2cbf5a318d4accb",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "RAMPA 2",
+        "diff": true,
+        "name": "Peça Rampa",
+        "x": 1130,
+        "y": 680,
+        "wires": [
+            [
+                "b34ea38a7267958e"
+            ]
+        ]
+    },
+    {
+        "id": "f95c112b301c6acf",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "RAMPA 3",
+        "diff": true,
+        "name": "Peça Rampa",
+        "x": 1130,
+        "y": 720,
+        "wires": [
+            [
+                "b34ea38a7267958e"
+            ]
+        ]
+    },
+    {
+        "id": "1b3010391aec92e0",
+        "type": "s7 out",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "variable": "RETORNO_CLIENTE",
+        "name": "",
+        "x": 1740,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "75b23d431f7fc89b",
+        "type": "debug",
+        "z": "1a4041165b130ba2",
+        "name": "PEÇA S SER SEPARADA",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1790,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "62d3c349e27bffaa",
+        "type": "change",
+        "z": "1a4041165b130ba2",
+        "name": "set 1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1270,
+        "y": 480,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "8ff18bac13642cbe",
+        "type": "change",
+        "z": "1a4041165b130ba2",
+        "name": "set 2",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "2",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1270,
+        "y": 520,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "b34ea38a7267958e",
+        "type": "change",
+        "z": "1a4041165b130ba2",
+        "name": "set 0",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1350,
+        "y": 680,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "acee672a89c27cd3",
+        "type": "debug",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 930,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "a62a5ccb5ae765a9",
+        "type": "change",
+        "z": "1a4041165b130ba2",
+        "name": "set 3",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "3",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1270,
+        "y": 440,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "dd8b9901504bb6a1",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "RAMPA 1",
+        "diff": true,
+        "name": "Peça Rampa",
+        "x": 110,
+        "y": 540,
+        "wires": [
+            [
+                "f68034898f4a0efd",
+                "38f334b3705bd172"
+            ]
+        ]
+    },
+    {
+        "id": "d2aea638fb862f5c",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "RAMPA 2",
+        "diff": true,
+        "name": "Peça Rampa",
+        "x": 110,
+        "y": 580,
+        "wires": [
+            [
+                "f68034898f4a0efd",
+                "38f334b3705bd172"
+            ]
+        ]
+    },
+    {
+        "id": "c87a448e10b7afa4",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "RAMPA 3",
+        "diff": true,
+        "name": "Peça Rampa",
+        "x": 110,
+        "y": 620,
+        "wires": [
+            [
+                "f68034898f4a0efd",
+                "38f334b3705bd172"
+            ]
+        ]
+    },
+    {
+        "id": "72e95bd67d1e0e63",
+        "type": "s7 in",
+        "z": "1a4041165b130ba2",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "PEDIDO_CLIENT2",
+        "diff": true,
+        "name": "PEDIDO_CLIENTE_2",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "da64b83a0fd4d797",
+                "c375424b4251e1f0"
+            ]
+        ]
+    },
+    {
+        "id": "c375424b4251e1f0",
+        "type": "debug",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 390,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "28fa69f5fe6ffd11",
+        "type": "inject",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "x": 1510,
+        "y": 240,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "3e4bdcd8051a9ad0",
+        "type": "inject",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 1510,
+        "y": 280,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "a9cadd141d6d8569",
+        "type": "inject",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "2",
+        "payloadType": "num",
+        "x": 1510,
+        "y": 320,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "e3607e453207b8fc",
+        "type": "inject",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "3",
+        "payloadType": "num",
+        "x": 1510,
+        "y": 360,
+        "wires": [
+            [
+                "1b3010391aec92e0"
+            ]
+        ]
+    },
+    {
+        "id": "b3e8e709a09e71ed",
+        "type": "mysql",
+        "z": "1a4041165b130ba2",
+        "mydb": "a239859642cc19b7",
+        "name": "",
+        "x": 650,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "76ee0c83d0e3a2ef",
+        "type": "change",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "pcprocesso",
+                "pt": "flow"
+            },
+            {
+                "t": "delete",
+                "p": "result_pedido",
+                "pt": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "38f334b3705bd172",
+        "type": "delay",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 320,
+        "y": 680,
+        "wires": [
+            [
+                "76ee0c83d0e3a2ef"
+            ]
+        ]
+    },
+    {
+        "id": "6154894b2fa7e506",
+        "type": "debug",
+        "z": "1a4041165b130ba2",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "a239859642cc19b7",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "data_monitoring",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]

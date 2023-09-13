@@ -1,0 +1,263 @@
+[
+    {
+        "id": "d68b9a856f2a1620",
+        "type": "tab",
+        "label": "DELETE DONE",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "91be7af906bde0b7",
+        "type": "inject",
+        "z": "d68b9a856f2a1620",
+        "name": "Sensor da rampa",
+        "props": [
+            {
+                "p": "payload.rampa",
+                "v": "true",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 340,
+        "y": 220,
+        "wires": [
+            [
+                "45aef2d1777a4a60"
+            ]
+        ]
+    },
+    {
+        "id": "ce74dd9115d7a705",
+        "type": "function",
+        "z": "d68b9a856f2a1620",
+        "name": "Pesquisa pedido igual na tabela",
+        "func": "material = flow.get('pcprocesso.material')\ncor = flow.get('pcprocesso.cor')\ntamanho = flow.get('pcprocesso.tamanho')\n\nmsg.topic = \"SELECT ID, ClientID FROM pedidos WHERE Material='\" +material+ \"' AND Cor='\" +cor+ \"' AND Tamanho='\" +tamanho+ \"' ORDER BY ID ASC LIMIT 1;\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 100,
+        "wires": [
+            [
+                "ebf2cef382077d16",
+                "6d7dcdd436f9e224"
+            ]
+        ]
+    },
+    {
+        "id": "f6ce9126052e7065",
+        "type": "csv",
+        "z": "d68b9a856f2a1620",
+        "name": "Separador",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "material,cor,tamanho",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 330,
+        "y": 100,
+        "wires": [
+            [
+                "e0675872ee9028af",
+                "ce74dd9115d7a705"
+            ]
+        ]
+    },
+    {
+        "id": "2d2977be15ce09fc",
+        "type": "inject",
+        "z": "d68b9a856f2a1620",
+        "name": "PÇ em Processo",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "PLAST,RED,ALTA",
+        "payloadType": "str",
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "f6ce9126052e7065"
+            ]
+        ]
+    },
+    {
+        "id": "ebf2cef382077d16",
+        "type": "debug",
+        "z": "d68b9a856f2a1620",
+        "name": "QUERY",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "topic",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "6d7dcdd436f9e224",
+        "type": "mysql",
+        "z": "d68b9a856f2a1620",
+        "mydb": "a239859642cc19b7",
+        "name": "",
+        "x": 810,
+        "y": 160,
+        "wires": [
+            [
+                "5274bc967324a3fe",
+                "555435d8ae0a9bee"
+            ]
+        ]
+    },
+    {
+        "id": "5274bc967324a3fe",
+        "type": "debug",
+        "z": "d68b9a856f2a1620",
+        "name": "RESULT",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1020,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "45aef2d1777a4a60",
+        "type": "function",
+        "z": "d68b9a856f2a1620",
+        "name": "Deleta pedido feito",
+        "func": "material = flow.get('pcprocesso.material')\ncor = flow.get('pcprocesso.cor')\ntamanho = flow.get('pcprocesso.tamanho')\nresult_pedido = flow.get('result_pedido')\n\nif (msg.payload.rampa == true)\n{\n    //msg.topic=\"DELETE FROM pedidos WHERE ID IN (SELECT ID FROM (SELECT ID FROM pedidos\tWHERE Material='\" +material+ \"' AND Cor='\" +cor+ \"' AND Tamanho='\" +tamanho+ \"' ORDER BY ID ASC) a) LIMIT 1;\"\n    msg.topic=\"DELETE FROM pedidos WHERE ID=\" +result_pedido+ \";\"\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 220,
+        "wires": [
+            [
+                "6d7dcdd436f9e224"
+            ]
+        ]
+    },
+    {
+        "id": "385e2cda225cd739",
+        "type": "s7 in",
+        "z": "d68b9a856f2a1620",
+        "endpoint": "",
+        "mode": "single",
+        "variable": "rmapa",
+        "diff": true,
+        "name": "Peça Rampa",
+        "x": 110,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e0675872ee9028af",
+        "type": "change",
+        "z": "d68b9a856f2a1620",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pcprocesso",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "555435d8ae0a9bee",
+        "type": "change",
+        "z": "d68b9a856f2a1620",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload[0].ID",
+                "pt": "msg",
+                "to": "result_pedido",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1010,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c6de457da932bbaa",
+        "type": "debug",
+        "z": "d68b9a856f2a1620",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 870,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "a239859642cc19b7",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "data_monitoring",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]

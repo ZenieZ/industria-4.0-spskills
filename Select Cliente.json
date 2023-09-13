@@ -1,0 +1,281 @@
+[
+    {
+        "id": "2bb1a0367e07390d",
+        "type": "tab",
+        "label": "SELECT CLIENT ID - OK",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "40ede53614f18720",
+        "type": "debug",
+        "z": "2bb1a0367e07390d",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "topic",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "fbacdfd366269fa3",
+        "type": "inject",
+        "z": "2bb1a0367e07390d",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "PLAST,RED,ALTA",
+        "payloadType": "str",
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "2ad5fbf4218d8a03"
+            ]
+        ]
+    },
+    {
+        "id": "1bc596bf5fe7108f",
+        "type": "mysql",
+        "z": "2bb1a0367e07390d",
+        "mydb": "a239859642cc19b7",
+        "name": "",
+        "x": 890,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b0f827303eed09eb",
+        "type": "function",
+        "z": "2bb1a0367e07390d",
+        "name": "Insere pedido na tabela",
+        "func": "ClientID = msg.payload.ClientID\nMaterial = msg.payload.Material\nCor = msg.payload.Cor\nTamanho = msg.payload.Tamanho\n\nmsg.payload={}\n\nmsg.payload.ClientID=ClientID\nmsg.payload.Material=Material\nmsg.payload.Cor=Cor\nmsg.payload.Tamanho=Tamanho\n\nmsg.topic = \"INSERT INTO `PEDIDOS`(`ID`, `ClientID`, `Material`, `Cor`, `Tamanho`) VALUES (NULL, :ClientID, :Material, :Cor, :Tamanho)\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 220,
+        "wires": [
+            [
+                "232e45c3fab6570d",
+                "1bc596bf5fe7108f"
+            ]
+        ]
+    },
+    {
+        "id": "79c779a04e6b281e",
+        "type": "csv",
+        "z": "2bb1a0367e07390d",
+        "name": "Separador",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "ClientID,Material,Cor,Tamanho",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 390,
+        "y": 220,
+        "wires": [
+            [
+                "b0f827303eed09eb",
+                "cefec0617734298b"
+            ]
+        ]
+    },
+    {
+        "id": "628367935d516549",
+        "type": "inject",
+        "z": "2bb1a0367e07390d",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "ID1,PLAST,RED,ALTA",
+        "payloadType": "str",
+        "x": 180,
+        "y": 220,
+        "wires": [
+            [
+                "79c779a04e6b281e",
+                "fa13d2fc5a098f47"
+            ]
+        ]
+    },
+    {
+        "id": "232e45c3fab6570d",
+        "type": "debug",
+        "z": "2bb1a0367e07390d",
+        "name": "Topic 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "topic",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "fa13d2fc5a098f47",
+        "type": "debug",
+        "z": "2bb1a0367e07390d",
+        "name": "Source",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "cefec0617734298b",
+        "type": "debug",
+        "z": "2bb1a0367e07390d",
+        "name": "Object",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "970ea457b7f8f463",
+        "type": "debug",
+        "z": "2bb1a0367e07390d",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "2ad5fbf4218d8a03",
+        "type": "csv",
+        "z": "2bb1a0367e07390d",
+        "name": "SPLIT",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "Material,Cor,Tamanho",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 370,
+        "y": 120,
+        "wires": [
+            [
+                "6c1766f346504303"
+            ]
+        ]
+    },
+    {
+        "id": "6c1766f346504303",
+        "type": "function",
+        "z": "2bb1a0367e07390d",
+        "name": "",
+        "func": "Material = msg.payload.Material\nCor = msg.payload.Cor\nTamanho = msg.payload.Tamanho\n\nmsg.topic = \"SELECT ClientID FROM pedidos WHERE Material='\" +Material+ \"' AND Cor='\" +Cor+ \"' AND Tamanho='\" +Tamanho+ \"' ORDER BY ID ASC LIMIT 1;\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 120,
+        "wires": [
+            [
+                "40ede53614f18720",
+                "8a05c6c257181407"
+            ]
+        ]
+    },
+    {
+        "id": "8a05c6c257181407",
+        "type": "mysql",
+        "z": "2bb1a0367e07390d",
+        "mydb": "a239859642cc19b7",
+        "name": "",
+        "x": 750,
+        "y": 120,
+        "wires": [
+            [
+                "970ea457b7f8f463"
+            ]
+        ]
+    },
+    {
+        "id": "610c83a18a9e3c82",
+        "type": "mysql",
+        "z": "2bb1a0367e07390d",
+        "mydb": "a239859642cc19b7",
+        "name": "",
+        "x": 360,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a239859642cc19b7",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "data_monitoring",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]
